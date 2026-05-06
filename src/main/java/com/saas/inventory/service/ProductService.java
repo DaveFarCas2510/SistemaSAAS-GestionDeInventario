@@ -216,5 +216,28 @@ public class ProductService {
         );
     }
 
+    public ProductResponse updateProduct(Long id, ProductRequest request) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
+
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new NotFoundException("Categoría no encontrada"));
+
+        product.setName(request.getName());
+        product.setPrice(request.getPrice());
+        product.setStock(request.getStock());
+        product.setCategory(category);
+
+        Product saved = productRepository.save(product);
+
+        return new ProductResponse(
+                saved.getId(),
+                saved.getName(),
+                saved.getPrice(),
+                saved.getStock(),
+                saved.getCategory().getName()
+        );
+    }
+
 
 }

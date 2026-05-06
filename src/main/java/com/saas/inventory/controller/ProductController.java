@@ -110,4 +110,13 @@ public class ProductController {
     ) {
         return ResponseEntity.ok(productService.findAllPaginated(page, size));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable Long id,
+            @RequestBody @Valid ProductRequest request
+    ) {
+        ProductResponse updated = productService.updateProduct(id, request);
+        return ResponseEntity.ok(updated);
+    }
 }
