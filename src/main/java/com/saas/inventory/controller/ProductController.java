@@ -3,6 +3,7 @@ package com.saas.inventory.controller;
 import com.saas.inventory.dto.PageResponse;
 import com.saas.inventory.dto.ProductRequest;
 import com.saas.inventory.dto.ProductResponse;
+import com.saas.inventory.dto.StockMovementDTO;
 import com.saas.inventory.model.Product;
 import com.saas.inventory.model.StockMovement;
 import com.saas.inventory.repository.StockMovementRepository;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/products")
@@ -59,8 +61,20 @@ public class ProductController {
     }
 
     @GetMapping("/{id}/movements")
-    public List<StockMovement> getMovements(@PathVariable Long id) {
-        return stockMovementRepository.findByProductId(id);
+    public List<StockMovementDTO> getMovements(@PathVariable Long id) {
+        return stockMovementRepository.findByProductId(id)
+                .stream()
+                .map(m -> {
+                    StockMovementDTO dto = new StockMovementDTO();
+                    dto.setType(m.getType());
+                    dto.setQuantity(m.getQuantity());
+                    dto.setPreviousStock(m.getPreviousStock());
+                    dto.setNewStock(m.getNewStock());
+                    dto.setUsername(m.getUsername());
+                    dto.setDate(m.getDate());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
